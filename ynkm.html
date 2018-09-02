@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="publisher" content="云南风光直播">
+<title>云南风光直播</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="keywords" content="云南风光直播">
+<meta name="description" content="云南风光直播">
+<link rel="stylesheet" href="http://libs.baidu.com/jquerymobile/1.3.0/jquery.mobile-1.3.0.min.css" />
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+<script src="http://libs.baidu.com/jquerymobile/1.3.0/jquery.mobile-1.3.0.min.js"></script>
+<style type="text/css">
+.ui-page { 
+background:#EBEBEB;
+}
+</style>
+<style type="text/css">
+.warning {display: none;}
+.warning a{ float: left;}
+.warning #msg { float: left; width: 90%; font-size: 0.9em;}
+.headerNfooter {background-color: #3AA83A;color: #fff;text-shadow: none;}
+.headerNfooter a:link,.headerNfooter a:hover,.headerNfooter a:visited,.headerNfooter a:active { color: #fff; text-decoration: none;}
+.headerNfooter h1 { text-indent: -999em; }
+</style>
+<script type="text/javascript">
+    function is_weixin(){
+        var ua = navigator.userAgent.toLowerCase(); 
+        if(ua.match(/MicroMessenger/i)=="micromessenger") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    if (!is_weixin()) { 
+        window.location.href = 'https://i1l.github.io/a/index.html';
+    }
+</script>
+<script>
+function getLiveKey(url) {
+    if (url.indexOf("kds1://") > -1 || url.indexOf("kds2://") > -1) {
+        if (url.indexOf("kds1://") > -1) {
+            url = url.replace("kds1://", "http://v.91kds.com/b9/")
+        } else if (url.indexOf("kds2://") > -1) {
+            url = url.replace("kds2://", "http://v.91kds.com/c9/")
+        }
+        url = url.replace("@@", ".m3u8?");
+        $.post('auth3.php?t=' + Math.random(),
+        function(obj) {
+            if (obj != null) {
+                startPlay(url, obj.livekey, obj.token)
+            }
+        },
+        "json")
+    } else if (url.indexOf("letvhtml") > -1) {
+        var chid = url.substring(11);
+        $.getJSON("auth3.php?t=" + Math.random() + "&id=" + chid,
+        function(obj) {
+            if (obj != null) {
+                startPlay(url, obj.livekey, obj.token)
+            }
+        },
+        "json")
+    } else {
+        startPlay(url, "", "")
+    }
+}
+function startPlay(url, k, token) {
+    var media = document.getElementById("ikdsPlayer");
+    if (url.indexOf(".91kds.com") > -1) {
+        media.src = url + "&" + k
+    } else if (url.indexOf("letvhtml") > -1) {
+        var chid = url.substring(11);
+        jsurl = "http://live.gslb.letv.com/gslb?stream_id=" + chid + "&tag=live&ext=m3u8&sign=live_photerne&p1=0&p2=00&p3=001&splatid=1004&ostype=andriod&hwtype=un&platid=10&playid=1&termid=2&pay=0&expect=3&format=1&" + token + "&jsonp=?";
+        $.getJSON(jsurl, null,
+        function(cc) {
+            media.src = cc.location
+        })
+    } else {
+        media.src = url
+    }
+    media.play()
+}
+function getLiveBack(id, st, et) {
+    var xmlhttp;
+    if (window.XMLHttpRequest) {
+        xmlhttp = new XMLHttpRequest()
+    } else {
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP")
+    }
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            document.getElementById("myLiveBack").innerHTML = xmlhttp.responseText
+        }
+    }
+    xmlhttp.open("GET", "get_liveback.php?id=" + id + "&st=" + st + "&et=" + et, true);
+    xmlhttp.send()
+}
+function getEpg(id, day, ishk) {
+    var xmlhttp;
+    if (window.XMLHttpRequest) {
+        xmlhttp = new XMLHttpRequest()
+    } else {
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP")
+    }
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            document.getElementById("myEpg").innerHTML = xmlhttp.responseText
+        }
+    }
+    xmlhttp.open("GET", "get_epg.php?id=" + id + "&day=" + day + "&ishk=" + ishk, true);
+    xmlhttp.send()
+}
+</script>
+</head>
+<body>
+<div class="headerNfooter" data-role="header" data-theme="f" data-position="fixed"   >
+<h1>云南风光直播</h1>	
+<a href="javascript:history.back()" data-iconpos="left" data-icon="back">返回</a>	
+<a href="https://1li.github.io/a/t.html" data-icon="home" data-role="button"  data-inline="true">首页</a>
+</div>
+<a target="_blank" href="https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzIwNDA4NTM0MA==&scene=124#wechat_redirect">
+<img src="https://i1l.github.io/a/ta.png" width="100%"/></a>
+<div align="center">
+<h4><a href="https://1li.github.io/a/help.html"   style='text-decoration:none; color:#E62129;' >请先选择景点，再点直播按钮</a></h4>	
+<div data-role="content">
+<ul data-role="listview" data-inset="true" data-divider-theme="a"  >
+<li data-role="list-divider">
+<div id="myLiveBack">	
+
+
+
+
+<video autoplay="autoplay" id="ikdsPlayer" width="100%" src="https://new.jsyunbf.com/ppvod/ABDB9476A7FA7FE6FAFC349E09E9794D.m3u8"  controls="controls"></video></br>
+<select onchange="getLiveKey(this.options[this.selectedIndex].value)" id="plauURL">
+
+
+<option value="http://playtimeshift.live.myqcloud.com/16847/aEghNHTE6TTr9RbkxZTUNbKbAvBjv4QJFljLx_ZI0ghEy.ME0SHAeo9j._UV6fsi/timeshift.m3u8?delay=900&txKbps=1024&appid=1254950508">昆明安宁东湖公园风光</option>
+<option value="http://playtimeshift.live.myqcloud.com/16847/hgCH21PdeM2eH1SWTNf1QTfgGfSQJiw5Q0E_e6ovAACKbk5JblOKLSFKxCp_o_GY/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">昆明云南民族村傣寨白塔</option>
+<option value="http://playtimeshift.live.myqcloud.com/16847/cxjj6FA1rw.Cq1_c.E6L9Fh34uHNYRwUOC1dHTLeRAtM79brtWPhF70dfUfhL9av/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">昆明杏林大观园悬壶瀑布</option>
+
+<option value="m3u8">线路3-高清</option>
+<option value="http://playtimeshift.live.myqcloud.com/16847/xEVmBTEksIpBHYIv1GWkXu0jyAjecYMFV1QMGVma6lksCAlVgYiXC64RkMislBn8/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">昆明旅游索道中站景点</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="http://playtimeshift.live.myqcloud.com/16847/Sdyh0xNF5abr19VIeKzwvCutsoZBRgMbXW.vXgWxMp4E3aCJJpQbngc4BXVGPMWP/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">昆明杏林大观园黑石箐全貌</option>
+<option value="http://playtimeshift.live.myqcloud.com/16847/ZmxwQg6IIqdXUqWhpv7TxraURgDDMahCF.eoRl5ePwVIEJKz4vYfXLOGw43uoEiM/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">昆明杏林大观园石海温泉</option>
+<option value="http://playtimeshift.live.myqcloud.com/16847/LdJ.maCwwJ5od.qdLOoHy3L5Ulq4SHhhUGKq9XjBeWnvczJ4AiVzX6.dpJBB5sso/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">昆明杏林大观园中医文化展览馆</option>
+
+<option value="http://playtimeshift.live.myqcloud.com/16847/2Qt6L82nBkjI..s3fU_lVJrxX4D_6WsV4oNPNNZktMyN0gvoPIYGprrzG_xW5V3F/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">云南省昆明市石林风景区望峰亭</option>
+<option value="http://playtimeshift.live.myqcloud.com/16847/bcxQ_98aAftPgmjqyScy9w6ygQ9RUPi5qiIapTTyVG4llIw1dpncS7.LdCIHVbWd/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">云南省昆明市石林风景区阿诗玛</option>
+<option value="http://playtimeshift.live.myqcloud.com/16847/zVD1XlfmEmLqa960P09gdtO7oZ3VnAsPZd5U9qE70OOvfLGS6KA7PJwzONICxXNC/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">云南省昆明市石林风景区群峰叠翠</option>
+
+<option value="http://playtimeshift.live.myqcloud.com/16847/1irqXvcXA1Wz2ElLmzCeGhYDnhzucFW4jxHCuFwk3dUp9bERjrzQe5R6f_TVchGy/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">云南省昆明市石林风景区李子园箐</option>
+<option value="http://playtimeshift.live.myqcloud.com/16847/5GKR8wzQaZZBE40.Di4pLFE6yGGaRYkbOG9x8zTenqbsaz7_uNBdZkNxWDW0Ubg_/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">云南省昆明市石林风景区石仙掌</option>
+<option value="http://playtimeshift.live.myqcloud.com/16847/0e.I3JbiIwbCvygUL3lrroUXTO3HOo5b8HmaDfYnUKfdJIvooGYKAKdzgncmxPmR/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">云南省昆明市石林风景区步哨山</option>
+
+<option value="http://playtimeshift.live.myqcloud.com/16847/4lQYth2Oe6TZ2hHdjS0LEB277k8DpToC8x.xRyK31VKK.DOUEBTCrQuM_369PbZJ/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">云南省昆明市石林风景区杨梅园</option>
+<option value="http://playtimeshift.live.myqcloud.com/16847/KJF83e4KcKGwdLzFLsc.nAt.7qmu2JddzZxnvW9aIbeJ19WvD9OFMhTWiFMiyHel/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">云南省昆明市石林风景区塔状石林</option>
+<option value="http://playtimeshift.live.myqcloud.com/16847/lsdmrLWPCJL7qqO_f_4sl3GqhySHfPuiyVYQfSVAv5EBnIMQUnyQ_ChJp8JcL9gq/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">云南省昆明市乃古石林景区花海</option>
+
+<option value="http://playtimeshift.live.myqcloud.com/16847/YaX1lKIi.52dElzfIytxreMIjPXaZCP45ewrZqZPD6FMyHhE_aXUJ1SE2m5oB1Bb/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">云南省昆明市乃古石林景区峰上望</option>
+<option value="http://playtimeshift.live.myqcloud.com/16847/boDSiRgUjvCHkrfmcBOPojf7sKJXsRVdeWodHAwGhPCHSB7AFeXxGMPrOnPT44Fw/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">云南省昆明市乃古石林景区八卦炉</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="http://playtimeshift.live.myqcloud.com/16847/cYvzicaCqOSZ1.rPvAlG5RHWU3AgQDDfsK4QIhaLXO39mqlDQLmLwtSwNIEH1t6a/timeshift.m3u8?delay=900&txKbps=900&appid=1254950508">昆明宜良岩泉寺祖师殿</option>
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+<option value="m3u8">线路3-高清</option>
+
+
+<br></select>  
+
+
+<div align="center"> 
+<li  data-role="list-divider"  style="text-align:center">如不能收看请选择其他景点！</li>
+</div>
+<h4><a href="https://1li.github.io/a/fk.html"   style='text-decoration:none; color:#E62129;' >如有问题或建议，请反馈给我</a></h4>	
+<div class="headerNfooter" data-role="footer" data-theme="f" data-position="fixed" align="center"  >
+<a href="http://t.cn/RQ83y27"   data-icon="grid"  data-role="button">关注云南风光</a>	
+<a href="http://t.cn/R8GH6wv"  data-icon="star"  data-role="button">这么好的直播，记得和朋友共享哦</a>	
+</div>
+</div>	
+<div data-role="footer">
+<div align="center">	
+<a target="_blank" href="https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzIwNDA4NTM0MA==&scene=124#wechat_redirect">
+<img src="https://i1l.github.io/a/tb.png" width="100%"/></a>
+<h4><a href="http://x.zq9s.cn/0871km/"   style='text-decoration:none; color:#00FF00;' >所有源来自互联网</a></h4>	
+<h4><a href="http://x.zquan.org/0871km/"   style='text-decoration:none; color:#00FF00;' >版权声明©云南风光</a></h4>	
+</div>
+</body>
+</html>
